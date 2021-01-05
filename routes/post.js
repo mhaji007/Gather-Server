@@ -4,9 +4,10 @@ const router = express.Router();
 
 // Import controllers
 
-const {getPosts} = require("../controllers/post");
+const {getPosts, createPost } = require("../controllers/post");
 
 router.get("/", getPosts)
+router.post("/post", createPost)
 
 
 // module.exports = {
