@@ -3,12 +3,12 @@ const morgan = require("morgan");
 const app = express();
 
 // Import routes
-const {getPosts} = require("./routes/post")
+const postRoutes = require("./routes/post")
 
 
 app.use(morgan("dev"));
 
-app.use("/", getPosts )
+app.use("/api", postRoutes )
 
 const port = process.env.PORT || 8080;
 
