@@ -11,7 +11,7 @@ const { runValidation } = require("../validators");
 
 const {getPosts, createPost } = require("../controllers/post");
 
-router.get("/", getPosts)
+router.get("/post", getPosts)
 router.post("/post", createPostValidator, runValidation, createPost);
 
 
