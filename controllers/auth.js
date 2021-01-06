@@ -135,8 +135,20 @@ exports.requireSignin = expressJwt({
   // Accessing a protected route requires secret from client
   // but we only have access to this secret when we are signed in
   // and are in possession of token
+
+  // If token is valid, express-jwt  appends the
+  // verified user id in an auth key to the request object
+  // Note: alternatively user id can be obtained via
+  // after running requireSignin via req.user._id.
+  // expressJwt will verify the JWT using JWT_SECRET from .env and the expiry date.
+
+  // If token is valid, then the data
+  // (used to create token during signin such as user._id ) is made available as req.user by default.
+  // but userProperty: 'auth' ( custom configuration option ) is used here
+  // So instead of req.user it makes req.auth available to access.
+  // Therefore any routes that uses requireSignin, that route's controller method will have access to req.auth.
+
   secret: process.env.JWT_SECRET,
+  userProperty: "auth",
   algorithms: ["HS256"],
 });
-
-
