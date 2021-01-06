@@ -47,5 +47,5 @@ exports.allUsers= (req, res) => {
       })
     }
     res.json({users})
-  })
+  }).select("name email update created")
 }
