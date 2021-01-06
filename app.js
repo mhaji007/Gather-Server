@@ -7,6 +7,7 @@ require("dotenv").config();
 
 // Import routes
 const postRoutes = require("./routes/post");
+const authRoutes = require("./routes/auth");
 
 // Initialize app
 const app = express();
@@ -37,6 +38,7 @@ app.use(cors());
 // app.use(cors({ origin: process.env.CLIENT_URL }));
 
 app.use("/api", postRoutes);
+app.use("/api", authRoutes);
 
 const port = process.env.PORT || 8080;
 
