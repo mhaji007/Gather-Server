@@ -98,8 +98,8 @@ exports.signin = (req, res) => {
     // Send cookie back both in res.cookie and res.json
     // Persist the token as 't' in cookie with expiry date
     // This is useful when for example server-side rendering is used
-    // and we want to make sure we receive cookie from server
-    // and do not want to use token stored client-side (e.g., in local storage)
+    // and we want to make sure we receive token from server
+    // and do not want to use and rely on token stored client-side (e.g., in local storage)
     res.cookie("t", token, { expire: new Date() + 9999 });
 
     // Return response with user and token to frontend client
@@ -119,10 +119,12 @@ exports.signout = (req, res) => {
 // expressJWT middleware to check for valid token and
 // also make id of user available to any role-based auth middlewares
 
-// requireSignin
-// Looks for valid token
-// in the request headers
-// if a valid token is found, it will check the token
+// requireSignin looks for valid token in the request headers
+// (i.e., checks for Bearer token, which is a combination of
+// secret key and _id, in headers and if it is there,
+// it will decode and compare the secret with our secret stored in .env
+// if that match and if token is not expired, then the token is valid)
+// In other words, if a token is found, it will check the token
 // against the secret and if the same secret
 // is used on signing the token, then it will check
 // for expiry of the token and if that checks out
