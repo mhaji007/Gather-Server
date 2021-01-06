@@ -14,8 +14,8 @@ const {requireSignin } = require("../controllers/auth");
 const {getPosts, createPost } = require("../controllers/post");
 const { userById } = require("../controllers/user");
 
-router.get("/post", requireSignin, getPosts)
-router.post("/post", createPostValidator, runValidation, createPost);
+router.get("/posts", getPosts)
+router.post("/post", requireSignin, createPostValidator, runValidation, createPost);
 
 // Retrieves userId from url and
 // finds user information based on the id

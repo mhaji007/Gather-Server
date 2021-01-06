@@ -9,6 +9,7 @@ require("dotenv").config();
 // Import routes
 const postRoutes = require("./routes/post");
 const authRoutes = require("./routes/auth");
+const userRoutes = require("./routes/user");
 
 // Initialize app
 const app = express();
@@ -41,6 +42,7 @@ app.use(cors());
 
 app.use("/api", postRoutes);
 app.use("/api", authRoutes);
+app.use("/api", userRoutes);
 
 // express-jwt middleware for handling
 // unauthorized error when accessing protected routes
