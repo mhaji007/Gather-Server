@@ -3,6 +3,7 @@
 const User = require("../models/user");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
+const expressJwt = require("express-jwt");
 
 // Query building via async await
 
@@ -17,11 +18,9 @@ exports.signup = async (req, res) => {
     });
   const user = await new User(req.body);
   await user.save();
-  res
-    .status(200)
-    .json({
-      message: "You have successfully singed up. Please proceed to log in.",
-    });
+  res.status(200).json({
+    message: "You have successfully singed up. Please proceed to log in.",
+  });
 };
 
 // Query building via exec
@@ -112,5 +111,28 @@ exports.signin = (req, res) => {
 
 exports.signout = (req, res) => {
   res.clearCookie("t");
-  return res.json({message: "Successfully signed out"})
-}
+  return res.json({ message: "Successfully signed out" });
+};
+
+// ================ Auth middleware ================ //
+
+// expressJWT middleware to check for valid token and
+// also make id of user available to any role-based auth middlewares
+
+// requireSignin
+// Looks for valid token
+// in the request headers
+// if a valid token is found, it will check the token
+// against the secret and if the same secret
+// is used on signing the token, then it will check
+// for expiry of the token and if that checks out
+// it will make the decoded token (what was used in generating the json web token)
+// available on req.user (e.g., here _id is used
+// in genearating the token, hence req.user._id)
+exports.requireSignin = expressJwt({
+  // Accessing a protected route requires secret from client
+  // but we only have access to this secret when we are signed in
+  // and are in possession of token
+  secret: process.env.JWT_SECRET,
+  algorithms: ["HS256"],
+});
