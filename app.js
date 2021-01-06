@@ -44,7 +44,6 @@ app.use("/api", authRoutes);
 
 // express-jwt middleware for handling
 // unauthorized error when accessing protected routes
-
 app.use(function (err, req, res, next) {
   if (err.name === "UnauthorizedError") {
     res.status(401).json({error:"Unauthorized access"})

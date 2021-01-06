@@ -1,4 +1,4 @@
-// Auth specific controller methods and middlewares
+// Core auth specific controller methods and middlewares
 
 const User = require("../models/user");
 require("dotenv").config();
@@ -138,3 +138,5 @@ exports.requireSignin = expressJwt({
   secret: process.env.JWT_SECRET,
   algorithms: ["HS256"],
 });
+
+
