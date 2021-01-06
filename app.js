@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const mongoose = require("mongoose");
 require("dotenv").config();
@@ -28,6 +29,7 @@ app.use(morgan("dev"));
 
 // JSON data's limit by default is 1mb
 app.use(bodyParser.json({ limit: "5mb", type: "application/json" }));
+app.use(cookieParser());
 
 // Wildcard cors - anyone domain has access
 // to the application

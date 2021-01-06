@@ -1,4 +1,8 @@
+// Auth specific controller methods and middlewares
+
 const User = require("../models/user");
+require("dotenv").config();
+const jwt = require("jsonwebtoken");
 
 // Query building via async await
 
@@ -51,3 +55,20 @@ exports.signup = async (req, res) => {
 //       });
 
 //     }
+
+
+exports.signin = (req, res) => {
+
+  // Find user based on email
+
+  // If error is found or no user is found
+
+  // If user found, authenticate user
+
+  // Generate a token with user id and secret
+
+  // Persist the token as 't' in cookie with expiry date
+
+  // Return response with user and token to frontend client
+
+}
