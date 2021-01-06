@@ -8,8 +8,9 @@ const { runValidation } = require("../validators");
 
 // Import controllers
 
-const { signup } = require("../controllers/auth");
+const { signup, signin } = require("../controllers/auth");
 
 router.post("/signup", userSignupValidator, runValidation, signup);
+router.post("/signin", signin);
 
 module.exports = router;

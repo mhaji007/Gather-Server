@@ -78,7 +78,7 @@ exports.signin = (req, res) => {
     // via authenticate method in user model )
     // If this step is skipped, anyone can
     // log in to anyone's account
-    if (!user.authentiate(password)) {
+    if (!user.authenticate(password)) {
       // If authenticate returns false,
       // alert user that email and password do not match
       return res.status(401).json({
