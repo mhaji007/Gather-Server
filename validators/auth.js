@@ -27,8 +27,4 @@ exports.userSignupValidator = [
     .withMessage("Password must be at least 6 characters long")
     .matches(/\d/)
     .withMessage("Password must contain at least one number"),
-  check("categories")
-    .not()
-    .isEmpty()
-    .withMessage("Please pick at least one category"),
 ];
