@@ -1,13 +1,18 @@
 const express = require("express");
 const router = express.Router();
 
+// Import auth middlewares
+const {requireSignin } = require("../controllers/auth");
 
 
 // Import controllers
 
-const { userById, allUsers } = require("../controllers/user");
+const { userById, allUsers, getUser } = require("../controllers/user");
 
+// Anyone may view all users
 router.get("/users", allUsers);
+// Only logged-in users may view (details) of a single user
+router.get("/user/:userId", requireSignin, getUser);
 
 
 // Retrieves userId from url and

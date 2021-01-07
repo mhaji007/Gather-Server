@@ -2,6 +2,10 @@
 
 const User = require("../models/user");
 
+// Custom middleware for finding a single user
+// based on route parmeters passed in url
+// and making user info available on req.profile
+
 exports.userById = (req, res, next, id) => {
   User.findById(id).exec((err, user) => {
     if (err || !user) {
@@ -39,6 +43,8 @@ exports.hasAuthorization = (req, res, next) => {
     }
 };
 
+// Controller for returning all users
+
 exports.allUsers= (req, res) => {
   User.find((err,users) => {
     if(err) {
@@ -48,4 +54,19 @@ exports.allUsers= (req, res) => {
     }
     res.json({users})
   }).select("name email update created")
+}
+
+
+// Controller for returning a single user
+
+// user id is passed from client
+// to server in the url, triggering
+// userById to run and making user
+// info available on req.profile
+// Therefore we only need to return
+// req.profile
+exports.getUser = (req, res) => {
+  req.profile.hashed_password = undefined;
+  req.profile.salt= undefined;
+  return res.json(req.profile)
 }
