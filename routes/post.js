@@ -12,6 +12,7 @@ const {requireSignin } = require("../controllers/auth");
 // Import controllers
 const {getPosts, createPost, postsByUser } = require("../controllers/post");
 const { userById } = require("../controllers/user");
+const { postById } = require("../controllers/post");
 
 router.get("/posts", getPosts)
 // Post route prior sending form data (using formidable)
@@ -31,10 +32,14 @@ router.post("/post/new/:userId", requireSignin, createPost);
 router.get("/posts/by/:userId", requireSignin, postsByUser);
 
 // Retrieves userId from url and
-// finds user information based on the id
+// finds user information based on the user id
 // and makes it available on req object
 router.param("userId", userById);
 
+// Retrieves postId from url and
+// finds post information based on the post id
+// and makes it available on req object
+router.param("postId", postById);
 
 // module.exports = {
 //   getPosts

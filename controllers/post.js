@@ -2,11 +2,34 @@ const Post = require("../models/post");
 const formidable = require("formidable");
 const fs = require("fs");
 
+// ================ auth middlewares ================ //
+
+// Custom middleware for finding a single poat
+// based on route parmeters passed in url
+// and making post info available on req.post
+
+exports.postById = (req, res, next, id) => {
+  Post.findById(id)
+    .populate("postedBy", "_id name")
+    .exec((err, post) => {
+      if (err || !post) {
+        return res.status(400).json({
+          error: "Post not found",
+        });
+      }
+      // Make post
+      // information available on a new
+      // property on req named profile
+      req.post = post;
+      next();
+    });
+};
+
 // Query building via then API as a Promises/A+
 
 exports.getPosts = (req, res) => {
   const posts = Post.find()
-  .populate("postedBy", "_id name")
+    .populate("postedBy", "_id name")
     .select(" _id title body")
     .then((posts) => {
       res.json({ posts });
@@ -100,22 +123,22 @@ exports.createPost = (req, res) => {
 exports.postsByUser = (req, res) => {
   // postedBy references the user model
   // find posts posted by a particular user
-  Post.find({postedBy: req.profile._id})
-  // and retrieve id and name of that user
-  // for those posts
-  .populate("postedBy", "_id name")
-  // sort the posts based on created field
-  .sort("-created")
-  .exec((err, posts) =>{
-    if (err) {
-      return res.status(400).json({
-        error:err
-      })
-    }
-    // Don't need to wrap the posts
-    // here like below. We can directly
-    // return posts
-    // res.json({posts: posts});
-    res.json(posts);
-  })
-}
+  Post.find({ postedBy: req.profile._id })
+    // and retrieve id and name of that user
+    // for those posts
+    .populate("postedBy", "_id name")
+    // sort the posts based on created field
+    .sort("-created")
+    .exec((err, posts) => {
+      if (err) {
+        return res.status(400).json({
+          error: err,
+        });
+      }
+      // Don't need to wrap the posts
+      // here like below. We can directly
+      // return posts
+      // res.json({posts: posts});
+      res.json(posts);
+    });
+};
