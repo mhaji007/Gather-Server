@@ -18,18 +18,18 @@ const postSchema = new mongoose.Schema({
     // Space allocated by node.js
     // for storing photo until it is fully received
     // from client
-    type: Buffer,
+    data: Buffer,
     // The file format
     contentType: String,
   },
   postedBy: {
     type: ObjectId,
-    ref:"User"
+    ref: "User",
   },
   created: {
-    type:Date,
-    default: Date.now
-  }
+    type: Date,
+    default: Date.now,
+  },
 });
 
 module.exports = mongoose.model("Post", postSchema);

@@ -29,7 +29,7 @@ mongoose
 app.use(morgan("dev"));
 
 // JSON data's limit by default is 1mb
-app.use(bodyParser.json({ limit: "5mb", type: "application/json" }));
+app.use(bodyParser.json());
 app.use(cookieParser());
 
 // Wildcard cors - anyone domain has access

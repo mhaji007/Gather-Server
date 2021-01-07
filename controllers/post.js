@@ -13,6 +13,8 @@ exports.getPosts = (req, res) => {
     .catch((err) => console.log(err));
 };
 
+// =================================================== //
+
 // Query building via exec
 
 // exports.getPosts = (req, res) => {
@@ -26,24 +28,36 @@ exports.getPosts = (req, res) => {
 //   });
 // };
 
+// =================================================== //
 
 exports.createPost = (req, res) => {
   let form = new formidable.IncomingForm();
-  // Keep the original extension of files
+  // Keep the original extension of files (png, jpg, etc.)
   form.keepExtensions = true;
 
-  form.parse((req, fields, files) => {
+  form.parse(req, (err, fields, files) => {
     if (err) {
       return res.status(400).json({
         error: "Image could not be uploaded",
       });
     }
+    console.log("FORM FIELDS FILES", fields, files);
+
+    // Create a new post
     let post = new Post(fields);
-    // Add user to the new post
-    post.postesdBy = req.profile;
-    // Handle image
+    // Hide user's password and salt from response
+    req.profile.hashed_password = undefined;
+    req.profile.salt = undefined;
+    // Assign post to a user
+    post.postedBy = req.profile;
+    // Handle image if uploaded
     if (files.photo) {
+      // readFileSync is used to make sure
+      // the entire file/image data is received before trying to save in database
+
+      // image in binary format
       post.photo.data = fs.readFileSync(files.photo.path);
+      // image type (png, jpg, etc.)
       post.photo.contentType = files.photo.type;
     }
     post.save((err, result) => {
@@ -55,6 +69,11 @@ exports.createPost = (req, res) => {
       res.json(result);
     });
   });
+
+  // =================================================== //
+
+  // Creating post prior to adding
+  // image upload functionality
 
   // const post = new Post(req.body);
   // console.log("Creating post: ", req.body)
@@ -69,10 +88,10 @@ exports.createPost = (req, res) => {
   //   });
   // });
 
-
   // post.save().then((result) => {
   //   res.status(200).json({
   //     post: result,
   //   });
   // });
+  // =================================================== //
 };

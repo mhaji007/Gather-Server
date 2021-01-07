@@ -10,12 +10,21 @@ const { runValidation } = require("../validators");
 const {requireSignin } = require("../controllers/auth");
 
 // Import controllers
-
 const {getPosts, createPost } = require("../controllers/post");
 const { userById } = require("../controllers/user");
 
 router.get("/posts", getPosts)
-router.post("/post", requireSignin, createPostValidator, runValidation, createPost);
+// Post route prior sending form data (using formidable)
+
+// router.post("/post", requireSignin, createPostValidator, runValidation, createPost);
+
+// express-validator does not work with formidable form data.
+// Validations before body parsing takes place. So when express-validator does its thing,
+// it will see an empty req.body.
+
+// So we can do client-side validation with React later
+// so that empty title, body is not send to backend.
+router.post("/post/new/:userId", requireSignin, createPost);
 
 // Retrieves userId from url and
 // finds user information based on the id
