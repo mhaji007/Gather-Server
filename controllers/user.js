@@ -75,6 +75,7 @@ exports.getUser = (req, res) => {
 exports.updateUser = (req, res, next) => {
   let user = req.profile;
   // Extend- mutate first object (user)
+  // with data in req.body (fields to be updated)
   user = _.extend(user, req.body);
   user.updated = Date.now();
   user.save((err) => {
@@ -83,8 +84,25 @@ exports.updateUser = (req, res, next) => {
         error: "You are not authorized to perform this action",
       });
     }
+    // Hide user's password and salt from response
     user.hashed_password = undefined;
     user.salt = undefined;
     res.json({user})
   });
 };
+
+
+
+exports.deleteUser=(req, res, next) => {
+  let user = req.profile;
+  user.remove((err, user)=> {
+    if(err) {
+      return res.status(400).json({
+        error:err
+      })
+    }
+
+     res.json({ message: "User was deleted successfully"});
+
+  })
+}
