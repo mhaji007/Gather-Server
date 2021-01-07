@@ -1,4 +1,4 @@
-// User profile udpate controller methods and middlewares
+// User profile CRUD controller methods and middlewares
 
 const User = require("../models/user");
 
@@ -72,6 +72,7 @@ exports.getUser = (req, res) => {
   return res.json(req.profile);
 };
 
+// Controller for updating a single user
 exports.updateUser = (req, res, next) => {
   let user = req.profile;
   // Extend- mutate first object (user)
@@ -92,7 +93,7 @@ exports.updateUser = (req, res, next) => {
 };
 
 
-
+// Controller for deleting a single user
 exports.deleteUser=(req, res, next) => {
   let user = req.profile;
   user.remove((err, user)=> {

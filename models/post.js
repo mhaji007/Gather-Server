@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { ObjectId } = mongoose.Schema;
 
 const postSchema = new mongoose.Schema({
   title: {
@@ -13,6 +14,21 @@ const postSchema = new mongoose.Schema({
     minlength: [4, "Body cannot be less than 4 characters"],
     maxlength: [2000, "Body cannot exceed 150 characters"],
   },
+  photo: {
+    // Space allocated by node.js
+    // for storing photo until it is fully received
+    type: Buffer,
+    // The file format
+    contentType: String,
+  },
+  postedBy: {
+    type: ObjectId,
+    ref:"User"
+  },
+  created: {
+    type:Date,
+    default: Date.now
+  }
 });
 
 module.exports = mongoose.model("Post", postSchema);
