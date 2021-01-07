@@ -17,6 +17,7 @@ const postSchema = new mongoose.Schema({
   photo: {
     // Space allocated by node.js
     // for storing photo until it is fully received
+    // from client
     type: Buffer,
     // The file format
     contentType: String,
