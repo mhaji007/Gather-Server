@@ -10,7 +10,7 @@ const { runValidation } = require("../validators");
 const {requireSignin } = require("../controllers/auth");
 
 // Import controllers
-const {getPosts, createPost } = require("../controllers/post");
+const {getPosts, createPost, postsByUser } = require("../controllers/post");
 const { userById } = require("../controllers/user");
 
 router.get("/posts", getPosts)
@@ -25,6 +25,10 @@ router.get("/posts", getPosts)
 // So we can do client-side validation with React later
 // so that empty title, body is not send to backend.
 router.post("/post/new/:userId", requireSignin, createPost);
+
+
+
+router.get("/posts/by/:userId", requireSignin, postsByUser);
 
 // Retrieves userId from url and
 // finds user information based on the id

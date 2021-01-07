@@ -96,3 +96,26 @@ exports.createPost = (req, res) => {
   // });
   // =================================================== //
 };
+
+exports.postsByUser = (req, res) => {
+  // postedBy references the user model
+  // find posts posted by a particular user
+  Post.find({postedBy: req.profile._id})
+  // and retrieve id and name of that user
+  // for those posts
+  .populate("postedBy", "_id name")
+  // sort the posts based on created field
+  .sort("-created")
+  .exec((err, posts) =>{
+    if (err) {
+      return res.status(400).json({
+        error:err
+      })
+    }
+    // Don't need to wrap the posts
+    // here like below. We can directly
+    // return posts
+    // res.json({posts: posts});
+    res.json(posts);
+  })
+}
