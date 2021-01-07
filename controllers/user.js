@@ -2,6 +2,8 @@
 
 const User = require("../models/user");
 
+const _ = require("lodash");
+
 // Custom middleware for finding a single user
 // based on route parmeters passed in url
 // and making user info available on req.profile
@@ -36,26 +38,25 @@ exports.userById = (req, res, next, id) => {
 exports.hasAuthorization = (req, res, next) => {
   const authorized =
     req.profile && req.auth && req.profile._id === req.auth._id;
-    if(!authorized) {
-      return res.status(403).json({
-        error: "You are not authorized to perform this action"
-      })
-    }
+  if (!authorized) {
+    return res.status(403).json({
+      error: "You are not authorized to perform this action",
+    });
+  }
 };
 
 // Controller for returning all users
 
-exports.allUsers= (req, res) => {
-  User.find((err,users) => {
-    if(err) {
+exports.allUsers = (req, res) => {
+  User.find((err, users) => {
+    if (err) {
       return res.status(400).json({
-        error:err
-      })
+        error: err,
+      });
     }
-    res.json({users})
-  }).select("name email update created")
-}
-
+    res.json({ users });
+  }).select("name email update created");
+};
 
 // Controller for returning a single user
 
@@ -67,6 +68,23 @@ exports.allUsers= (req, res) => {
 // req.profile
 exports.getUser = (req, res) => {
   req.profile.hashed_password = undefined;
-  req.profile.salt= undefined;
-  return res.json(req.profile)
-}
+  req.profile.salt = undefined;
+  return res.json(req.profile);
+};
+
+exports.updateUser = (req, res, next) => {
+  let user = req.profile;
+  // Extend- mutate first object (user)
+  user = _.extend(user, req.body);
+  user.updated = Date.now();
+  user.save((err) => {
+    if (err) {
+      return res.status(400).json({
+        error: "You are not authorized to perform this action",
+      });
+    }
+    user.hashed_password = undefined;
+    user.salt = undefined;
+    res.json({user})
+  });
+};
