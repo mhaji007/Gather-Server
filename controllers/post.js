@@ -4,7 +4,7 @@ const fs = require("fs");
 
 // ================ auth middlewares ================ //
 
-// Custom middleware for finding a single poat
+// Custom middleware for finding a single post
 // based on route parmeters passed in url
 // and making post info available on req.post
 
@@ -14,7 +14,7 @@ exports.postById = (req, res, next, id) => {
     .exec((err, post) => {
       if (err || !post) {
         return res.status(400).json({
-          error: "Post not found",
+          error:err,
         });
       }
       // Make post
@@ -24,6 +24,37 @@ exports.postById = (req, res, next, id) => {
       next();
     });
 };
+
+// Custom middleware for checking authorized user
+
+// First check if postById() middleware worked successfully.
+// If yes, then we will have the post available as req.post
+
+// if we have req.post available then check req.auth's availablity
+// (this will be made available if the token is valid by jwt package
+// using requireSignin() middleware). If both are available then compare if
+// req.post.postedBy._id === req.auth._id
+// If true, that would mean that this post belongs
+// to the currently logged-in user and therefore they are
+// authorized to perform an action on the route this middleware
+// is applied to (e.g., they can delete the post).
+exports.isPoster = (req, res, next) => {
+
+
+  let isPoster = req.post && req.auth && req.post.postedBy._id == req.auth._id;
+  console.log("req.post ===>", req.post)
+  console.log("req.auth ===>", req.auth)
+  console.log("req.post.postedBy ===>", req.post.postedBy)
+  console.log("req.post.postedBy._id ===>", req.post.postedBy._id)
+  if (!isPoster) {
+    return res.status(403).json({
+      error: "User is not authorized",
+    });
+  }
+  next();
+};
+
+// =================================================== //
 
 // Query building via then API as a Promises/A+
 
@@ -36,8 +67,6 @@ exports.getPosts = (req, res) => {
     })
     .catch((err) => console.log(err));
 };
-
-// =================================================== //
 
 // Query building via exec
 
@@ -141,4 +170,18 @@ exports.postsByUser = (req, res) => {
       // res.json({posts: posts});
       res.json(posts);
     });
+};
+
+exports.deletePost = (req, res) => {
+  let post = req.post;
+  post.remove((err, post) => {
+    if (err) {
+      return res.status(400).json ({
+        error: "Could not delete the post"
+      })
+    }
+    res.json({
+      message: "Post was deleted susccessfully"
+    })
+  })
 };

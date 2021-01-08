@@ -138,9 +138,9 @@ exports.requireSignin = expressJwt({
 
   // If token is valid, express-jwt  appends the
   // verified user id in an auth key to the request object
-  // Note: alternatively user id can be obtained via
+  // Note: alternatively user id can be obtained
   // after running requireSignin via req.user._id.
-  // expressJwt will verify the JWT using JWT_SECRET from .env and the expiry date.
+  // express-jwt will verify the JWT using JWT_SECRET from .env and the expiry date.
 
   // If token is valid, then the data
   // (used to create token during signin such as user._id ) is made available as req.user by default.

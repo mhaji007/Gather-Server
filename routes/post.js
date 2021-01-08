@@ -10,10 +10,15 @@ const { runValidation } = require("../validators");
 const {requireSignin } = require("../controllers/auth");
 
 // Import controllers
-const {getPosts, createPost, postsByUser } = require("../controllers/post");
+const {
+  getPosts,
+  createPost,
+  postsByUser,
+  isPoster,
+  deletePost,
+  postById,
+} = require("../controllers/post");
 const { userById } = require("../controllers/user");
-const { postById } = require("../controllers/post");
-
 router.get("/posts", getPosts)
 // Post route prior sending form data (using formidable)
 
@@ -30,6 +35,11 @@ router.post("/post/new/:userId", requireSignin, createPost);
 
 
 router.get("/posts/by/:userId", requireSignin, postsByUser);
+
+// requireSign in makes sure the user is logged in
+// isPoster makes sure the logged in user owns the post
+// that is about to be updated
+router.delete("/post/:postId", requireSignin, isPoster, deletePost);
 
 // Retrieves userId from url and
 // finds user information based on the user id

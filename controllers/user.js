@@ -60,12 +60,21 @@ exports.authMiddleWare = (req, res, next) => {
 // First check if userById() middleware worked successfully.
 // If yes, then we will have the user available as req.profile
 
-// if we have req.profile available then check req.auth's availablity
+// If we have req.profile available then check req.auth's availablity
 // (this will be made available if the token is valid by jwt package
 // using requireSignin() middleware). If both are available then compare if
 // req.profile._id === req.auth._id
 // If true, that would mean that currently logged in user
-// is same as the user who is in req.profile.
+// is same as the user who is in req.profile and has permission
+// to perform action on any route this middleware is placed in
+// (e.g., they are able to create, update, or delete posts or update profile image)
+
+// Note: this middleware does not prevent a user from performing action
+// on another user's post (e.g., editing or deleting the post) since
+// it only checks whether a given user is authhorized to perform an action
+// and does not check whether the performer is the creator
+// for that there is a need for another middleware called isPoster
+// in user middleware
 
 exports.hasAuthorization = (req, res, next) => {
   const authorized =
