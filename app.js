@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const fs = require("fs");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
@@ -25,6 +26,19 @@ mongoose
   .then(() => console.log("Successfully connected to the Database"))
   .catch((err) => console.log("Database connection error", err));
 
+// apiDocs endpoint
+app.get("/", (req, res) => {
+  fs.readFile("docs/apiDocs.json", (err, data) => {
+    if (err) {
+      res.status(400).json({
+        error: err,
+      });
+    }
+    const docs = JSON.parse(data);
+    res.json(docs);
+  });
+});
+
 // Global middlewares (to be used on all routes)
 app.use(morgan("dev"));
 
@@ -40,6 +54,8 @@ app.use(cors());
 // have access to the application
 // app.use(cors({ origin: process.env.CLIENT_URL }));
 
+// Route middlewares
+
 app.use("/api", postRoutes);
 app.use("/api", authRoutes);
 app.use("/api", userRoutes);
@@ -48,9 +64,9 @@ app.use("/api", userRoutes);
 // unauthorized error when accessing protected routes
 app.use(function (err, req, res, next) {
   if (err.name === "UnauthorizedError") {
-    res.status(401).json({error:"Unauthorized access"})
+    res.status(401).json({ error: "Unauthorized access" });
   }
-})
+});
 
 const port = process.env.PORT || 8080;
 
