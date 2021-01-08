@@ -15,6 +15,7 @@ const {
   createPost,
   postsByUser,
   isPoster,
+  updatePost,
   deletePost,
   postById,
 } = require("../controllers/post");
@@ -35,6 +36,8 @@ router.post("/post/new/:userId", requireSignin, createPost);
 
 
 router.get("/posts/by/:userId", requireSignin, postsByUser);
+
+router.put("/post/:postId", requireSignin, isPoster, updatePost);
 
 // requireSign in makes sure the user is logged in
 // isPoster makes sure the logged in user owns the post

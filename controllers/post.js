@@ -2,6 +2,8 @@ const Post = require("../models/post");
 const formidable = require("formidable");
 const fs = require("fs");
 
+const _ = require("lodash");
+
 // ================ auth middlewares ================ //
 
 // Custom middleware for finding a single post
@@ -25,7 +27,7 @@ exports.postById = (req, res, next, id) => {
     });
 };
 
-// Custom middleware for checking authorized user
+// Custom middleware for checking authorized poster user
 
 // First check if postById() middleware worked successfully.
 // If yes, then we will have the post available as req.post
@@ -40,12 +42,13 @@ exports.postById = (req, res, next, id) => {
 // is applied to (e.g., they can delete the post).
 exports.isPoster = (req, res, next) => {
 
-
+  // "==" is used here since req.post.postedBy._id is of type number and
+  // req.auth._id is of type string
   let isPoster = req.post && req.auth && req.post.postedBy._id == req.auth._id;
-  console.log("req.post ===>", req.post)
-  console.log("req.auth ===>", req.auth)
-  console.log("req.post.postedBy ===>", req.post.postedBy)
-  console.log("req.post.postedBy._id ===>", req.post.postedBy._id)
+  console.log("req.post ===>", req.post);
+  console.log("req.auth ===>", req.auth);
+  console.log("req.post.postedBy ===>", req.post.postedBy);
+  console.log("req.post.postedBy._id ===>", req.post.postedBy._id);
   if (!isPoster) {
     return res.status(403).json({
       error: "User is not authorized",
@@ -83,6 +86,7 @@ exports.getPosts = (req, res) => {
 
 // =================================================== //
 
+// Controller for creating a single post
 exports.createPost = (req, res) => {
   let form = new formidable.IncomingForm();
   // Keep the original extension of files (png, jpg, etc.)
@@ -149,6 +153,7 @@ exports.createPost = (req, res) => {
   // =================================================== //
 };
 
+// Controller for returing all posts by a given user
 exports.postsByUser = (req, res) => {
   // postedBy references the user model
   // find posts posted by a particular user
@@ -172,6 +177,7 @@ exports.postsByUser = (req, res) => {
     });
 };
 
+// Controller for deleting a single post
 exports.deletePost = (req, res) => {
   let post = req.post;
   post.remove((err, post) => {
@@ -185,3 +191,23 @@ exports.deletePost = (req, res) => {
     })
   })
 };
+
+
+// Controller for updating a single post
+exports.updatePost = (req, res, next) => {
+  let post = req.post;
+  // Extend- mutate first object (post)
+  // with data in req.body (fields to be updated)
+  post = _.extend(post, req.body);
+  post.updated = Date.now();
+  post.save((err) => {
+    if (err) {
+      return res.status(400).json({
+        error: err,
+      });
+    }
+    res.json({post})
+  });
+};
+
+
