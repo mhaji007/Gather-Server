@@ -23,7 +23,7 @@ exports.userSignupValidator = [
     .withMessage("Email of minimum 4 and maximum 2000 characters is required"),
   // Make sure it is not short
   check("password")
-    .isLength({ name: 6 })
+    .isLength({ min: 6 })
     .withMessage("Password must be at least 6 characters long")
     .matches(/\d/)
     .withMessage("Password must contain at least one number"),
