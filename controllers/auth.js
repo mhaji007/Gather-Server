@@ -95,8 +95,8 @@ exports.signin = (req, res) => {
       //  }
     );
 
-    // Send cookie back both in res.cookie and res.json
-    // Persist the token as 't' in cookie with expiry date
+    // Send token back both in res.cookie and res.json.
+    // Persist the token as 't' in cookie with expiry date.
     // This is useful when for example server-side rendering is used
     // and we want to make sure we receive token from server
     // and do not want to use and rely on token stored client-side (e.g., in local storage)
@@ -123,7 +123,7 @@ exports.signout = (req, res) => {
 // (i.e., checks for Bearer token, which is a combination of
 // secret key and _id, in headers and if it is there,
 // it will decode and compare the secret with our secret stored in .env
-// if that match and if token is not expired, then the token is valid)
+// if the two match and if token is not expired, then the token is valid)
 // In other words, if a token is found, it will check the token
 // against the secret and if the same secret
 // is used on signing the token, then it will check
@@ -138,6 +138,7 @@ exports.requireSignin = expressJwt({
 
   // If token is valid, express-jwt  appends the
   // verified user id in an auth key to the request object
+
   // Note: alternatively user id can be obtained
   // after running requireSignin via req.user._id.
   // express-jwt will verify the JWT using JWT_SECRET from .env and the expiry date.

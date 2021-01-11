@@ -98,7 +98,15 @@ exports.allUsers = (req, res) => {
         error: err,
       });
     }
-    res.json({ users });
+    // The following is equivalent ot
+    // returning {users:users} we are wraapping
+    // the response in an object with a key of users
+    // herre however we need to loop through users
+    // on frontend using map and map only works on
+    // arrays, therefore we need to change the return
+    // to res.json(users)
+    // res.json({ users });
+    res.json( users);
   }).select("name email update created");
 };
 
