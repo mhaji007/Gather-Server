@@ -98,7 +98,7 @@ exports.allUsers = (req, res) => {
         error: err,
       });
     }
-    // The following is equivalent ot
+    // The following is equivalent to
     // returning {users:users} we are wraapping
     // the response in an object with a key of users
     // herre however we need to loop through users
