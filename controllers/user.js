@@ -1,9 +1,10 @@
 // User profile CRUD controller methods and middlewares
 
 const User = require("../models/user");
+const formidable = require("formidable");
+const fs = require("fs");
 
 const _ = require("lodash");
-
 
 // ================ auth middlewares ================ //
 
@@ -26,14 +27,12 @@ exports.userById = (req, res, next, id) => {
   });
 };
 
-
 // Alternative custom middleware for finding a single
 // user and making user info availbale on req.profile
 
 // Custom middleware to make logged-in user info available
 // This middleware requires that requireSignin runs first
 // so the ._id is available on req.user
-
 
 exports.authMiddleWare = (req, res, next) => {
   const authUserId = req.user._id;
@@ -52,8 +51,6 @@ exports.authMiddleWare = (req, res, next) => {
     next();
   });
 };
-
-
 
 // Custom middleware for checking authorized user
 
@@ -78,7 +75,7 @@ exports.authMiddleWare = (req, res, next) => {
 
 exports.hasAuthorization = (req, res, next) => {
   const authorized =
-  req.profile && req.auth && req.profile._id === req.auth._id;
+    req.profile && req.auth && req.profile._id === req.auth._id;
   if (!authorized) {
     return res.status(403).json({
       error: "You are not authorized to perform this action",
@@ -87,7 +84,6 @@ exports.hasAuthorization = (req, res, next) => {
 };
 
 // ============================================================== //
-
 
 // Controller for returning all users
 
@@ -106,7 +102,7 @@ exports.allUsers = (req, res) => {
     // arrays, therefore we need to change the return
     // to res.json(users)
     // res.json({ users });
-    res.json( users);
+    res.json(users);
   }).select("name email update created");
 };
 
@@ -124,38 +120,74 @@ exports.getUser = (req, res) => {
   return res.json(req.profile);
 };
 
+// Controller for updating a single user (Prior to handling
+// user photo)
+
+// exports.updateUser = (req, res, next) => {
+//   let user = req.profile;
+//   // Extend- mutate first object (user)
+//   // with data in req.body (fields to be updated)
+//   user = _.extend(user, req.body);
+//   user.updated = Date.now();
+//   user.save((err) => {
+//     if (err) {
+//       return res.status(400).json({
+//         error: "You are not authorized to perform this action",
+//       });
+//     }
+//     // Hide user's password and salt from response
+//     user.hashed_password = undefined;
+//     user.salt = undefined;
+//     res.json({user})
+//   });
+// };
+
 // Controller for updating a single user
 exports.updateUser = (req, res, next) => {
-  let user = req.profile;
-  // Extend- mutate first object (user)
-  // with data in req.body (fields to be updated)
-  user = _.extend(user, req.body);
-  user.updated = Date.now();
-  user.save((err) => {
+  let form = new formidable.IncomingForm();
+  form.keepExtensions = true;
+  // req is where the form data is coming from
+  // the callback is how we handle the data
+  form.parse(req, (err, fields, files) => {
+      console.log("UPDATE USER FORM DATA ", fields, files);
     if (err) {
+           console.log("UPDATE USER ERR =====> ", err);
       return res.status(400).json({
-        error: "You are not authorized to perform this action",
+        error: "Photo could not be uploaded",
       });
     }
-    // Hide user's password and salt from response
-    user.hashed_password = undefined;
-    user.salt = undefined;
-    res.json({user})
+    console.table({ err, fields, files});
+    let user = req.profile;
+    user = _.extend(user, fields);
+    user.updated = Date.now();
+
+    if (files.photo) {
+      user.photo.data = fs.readFileSync(files.photo.path);
+      user.photo.contentType = files.photo.type;
+    }
+    user.save((err, result) => {
+      if (err) {
+        return res.status(400).json({
+          error: err,
+        });
+      }
+      user.hashed_password = undefined;
+      user.salt = undefined;
+      res.json(user);
+    });
   });
 };
 
-
 // Controller for deleting a single user
-exports.deleteUser=(req, res, next) => {
+exports.deleteUser = (req, res, next) => {
   let user = req.profile;
-  user.remove((err, user)=> {
-    if(err) {
+  user.remove((err, user) => {
+    if (err) {
       return res.status(400).json({
-        error:err
-      })
+        error: err,
+      });
     }
 
-     res.json({ message: "User was deleted successfully"});
-
-  })
-}
+    res.json({ message: "User was deleted successfully" });
+  });
+};

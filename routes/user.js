@@ -26,8 +26,8 @@ router.get("/user/:userId", requireSignin, getUser);
 router.put(
   "/user/:userId",
   requireSignin,
-  userUpdateValidator,
-  runValidation,
+  // userUpdateValidator,
+  // runValidation,
   updateUser
 );
 router.delete("/user/:userId", requireSignin, deleteUser);

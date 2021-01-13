@@ -22,7 +22,15 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
-  updated: Date
+  updated: Date,
+  photo: {
+    // Space allocated by node.js
+    // for storing photo until it is fully received
+    // from client
+    data: Buffer,
+    // The file format
+    contentType: String,
+  },
 });
 
 // Virtual fields ==> "password", used to get the plain password
