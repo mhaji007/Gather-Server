@@ -191,3 +191,12 @@ exports.deleteUser = (req, res, next) => {
     res.json({ message: "User was deleted successfully" });
   });
 };
+
+// Controller for retrieving user's profile image
+exports.userPhoto = (req, res, next) => {
+  if(req.profile.photo.data) {
+    res.set(("Content-Type", req.profile.photo.contentType))
+    return res.send(req.profile.photo.data);
+  }
+  next();
+}

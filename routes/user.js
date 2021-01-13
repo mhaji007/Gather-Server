@@ -17,6 +17,7 @@ const {
   getUser,
   updateUser,
   deleteUser,
+  userPhoto
 } = require("../controllers/user");
 
 // Anyone may view all users
@@ -30,6 +31,8 @@ router.put(
   // runValidation,
   updateUser
 );
+
+router.get("/user/photo/:userId", userPhoto)
 router.delete("/user/:userId", requireSignin, deleteUser);
 
 // Retrieves userId from url and
