@@ -31,6 +31,10 @@ const userSchema = new mongoose.Schema({
     // The file format
     contentType: String,
   },
+  about: {
+    type: String,
+    trim: true,
+  },
 });
 
 // Virtual fields ==> "password", used to get the plain password
@@ -47,7 +51,7 @@ const userSchema = new mongoose.Schema({
 // the plain password. The plain password
 // is hashed and saved in the database in the process
 userSchema
-  .virtual('password')
+  .virtual("password")
   .set(function (password) {
     // create temp varaible called _password
     this._password = password;
@@ -67,7 +71,6 @@ userSchema
   .get(function () {
     return this._password;
   });
-
 
 // Methods ==>
 // each user schema may be assigned methods
@@ -100,4 +103,4 @@ userSchema.methods = {
   // },
 };
 
-module.exports = mongoose.model("User", userSchema)
+module.exports = mongoose.model("User", userSchema);

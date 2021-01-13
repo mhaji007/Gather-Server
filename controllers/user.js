@@ -142,21 +142,21 @@ exports.getUser = (req, res) => {
 //   });
 // };
 
-// Controller for updating a single user
+// Controller for updating a single user with photo
 exports.updateUser = (req, res, next) => {
   let form = new formidable.IncomingForm();
   form.keepExtensions = true;
   // req is where the form data is coming from
   // the callback is how we handle the data
   form.parse(req, (err, fields, files) => {
-      console.log("UPDATE USER FORM DATA ", fields, files);
+    console.log("UPDATE USER FORM DATA ", fields, files);
     if (err) {
-           console.log("UPDATE USER ERR =====> ", err);
+      console.log("UPDATE USER ERR =====> ", err);
       return res.status(400).json({
         error: "Photo could not be uploaded",
       });
     }
-    console.table({ err, fields, files});
+    console.table({ err, fields, files });
     let user = req.profile;
     user = _.extend(user, fields);
     user.updated = Date.now();
@@ -194,9 +194,12 @@ exports.deleteUser = (req, res, next) => {
 
 // Controller for retrieving user's profile image
 exports.userPhoto = (req, res, next) => {
-  if(req.profile.photo.data) {
-    res.set(("Content-Type", req.profile.photo.contentType))
+  // Check whether user has uploaded an image
+  // res.set is a standard way of telling browser the type of content we are sending.
+  // it hangs if there is no return keyword or res.json is used.
+  if (req.profile.photo.data) {
+    res.set(("Content-Type", req.profile.photo.contentType));
     return res.send(req.profile.photo.data);
   }
   next();
-}
+};
