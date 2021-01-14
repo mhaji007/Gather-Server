@@ -19,10 +19,14 @@ const {
   deleteUser,
   userPhoto,
   addFollowing,
-  addFollower
+  addFollower,
+  removeFollowing,
+  removeFollower
 } = require("../controllers/user");
 
+
 router.put("/user/follow", requireSignin, addFollowing, addFollower)
+router.put("/user/follow", requireSignin, removeFollowing, removeFollower)
 
 // Anyone may view all users
 router.get("/users", allUsers);

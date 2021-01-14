@@ -215,13 +215,18 @@ exports.userPhoto = (req, res, next) => {
   next();
 };
 
+// When following/unfollowing two arrays of
+// followings and followers must be handled
+// simultaneously. Add to one party's (user who follows) following
+// translates to add to the other party's (user being followed) followers
 // Controller for adding to one's following users
 exports.addFollowing = (req, res, next) => {
   // req.body.userId ===> logged-in user's id
-  // req.body.followId ===> user that logged-in user follows
+  // req.body.followId ===> user that logged-in user follows (from React client)
   User.findByIdAndUpdate(
     req.body.userId,
     { $push: { following: req.body.followId } },
+    { new: true },
     (err, result) => {
       if (err) {
         return res.status(400).json({
@@ -232,25 +237,64 @@ exports.addFollowing = (req, res, next) => {
     }
   );
 };
+// Controller for adding to one's followers
 exports.addFollower = (req, res, next) => {
   // req.body.userId ===> logged-in user's id
   // req.body.followId ===> user that logged-in user follows
   User.findByIdAndUpdate(
     req.body.followId,
     { $push: { followers: req.body.userId } },
-    {new:true}
-
+    { new: true }
   )
-  .populate("following", "_id name")
-  .populate("followers", "_id name")
-  .exec((err, result) => {
-          if (err) {
-            return res.status(400).json({
-              errorLerr,
-            });
-          }
-          result._hashed_password = undefined;
-          result.salt = undefined;
-          res.json(result)
-  })
+    .populate("following", "_id name")
+    .populate("followers", "_id name")
+    .exec((err, result) => {
+      if (err) {
+        return res.status(400).json({
+          errorLerr,
+        });
+      }
+      result._hashed_password = undefined;
+      result.salt = undefined;
+      res.json(result);
+    });
+};
+exports.removeFollowing = (req, res, next) => {
+  // req.body.userId ===> logged-in user's id
+  // req.body.followId ===> user that logged-in user follows (from React client)
+  User.findByIdAndUpdate(
+    req.body.userId,
+    { $pull: { following: req.body.unfollowId } },
+    { new: true },
+    (err, result) => {
+      if (err) {
+        return res.status(400).json({
+          errorLerr,
+        });
+      }
+      next();
+    }
+  );
+};
+// Controller for adding to one's followers
+exports.removeFollower = (req, res, next) => {
+  // req.body.userId ===> logged-in user's id
+  // req.body.followId ===> user that logged-in user follows
+  User.findByIdAndUpdate(
+    req.body.unfollowId,
+    { $pull: { followers: req.body.userId } },
+    { new: true }
+  )
+    .populate("following", "_id name")
+    .populate("followers", "_id name")
+    .exec((err, result) => {
+      if (err) {
+        return res.status(400).json({
+          errorLerr,
+        });
+      }
+      result._hashed_password = undefined;
+      result.salt = undefined;
+      res.json(result);
+    });
 };
