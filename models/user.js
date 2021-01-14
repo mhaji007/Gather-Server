@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const { v4: uuidv4 } = require("uuid");
 const crypto = require("crypto");
+const {ObjectId} = mongoose.Schema
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -35,6 +36,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
+  // List of users one is following
+  following: [
+    {type:ObjectId, ref:"User"}
+  ],
+  // List of people that follow one
+  followers: [
+    {type:ObjectId, ref:"User"}
+  ]
 });
 
 // Virtual fields ==> "password", used to get the plain password

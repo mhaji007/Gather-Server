@@ -13,7 +13,11 @@ const _ = require("lodash");
 // and making user info available on req.profile
 
 exports.userById = (req, res, next, id) => {
-  User.findById(id).exec((err, user) => {
+  User.findById(id)
+  // Populate followers and following users array
+  .populate("following", "_id name")
+  .populate("followers", "_id name")
+  .exec((err, user) => {
     if (err || !user) {
       return res.status(400).json({
         error: "User not found",
