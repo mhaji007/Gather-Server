@@ -26,7 +26,7 @@ const {
 
 
 router.put("/user/follow", requireSignin, addFollowing, addFollower)
-router.put("/user/follow", requireSignin, removeFollowing, removeFollower)
+router.put("/user/unfollow", requireSignin, removeFollowing, removeFollower)
 
 // Anyone may view all users
 router.get("/users", allUsers);
