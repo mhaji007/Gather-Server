@@ -12,23 +12,30 @@ const _ = require("lodash");
 // based on route parmeters passed in url
 // and making user info available on req.profile
 
+// id is pushed to url client-side when making
+// request to server. On server any route that has userId route
+// parameter in the incoming request url
+// (e.g., http://localhost/api/user/idk9824766305) is
+// intercepted by userById middleware where user
+// information is extracted based on that id
+
 exports.userById = (req, res, next, id) => {
   User.findById(id)
-  // Populate followers and following users array
-  .populate("following", "_id name")
-  .populate("followers", "_id name")
-  .exec((err, user) => {
-    if (err || !user) {
-      return res.status(400).json({
-        error: "User not found",
-      });
-    }
-    // Make currently logged-in user's
-    // information available on a new
-    // property on req named profile
-    req.profile = user;
-    next();
-  });
+    // Populate followers and following users array
+    .populate("following", "_id name")
+    .populate("followers", "_id name")
+    .exec((err, user) => {
+      if (err || !user) {
+        return res.status(400).json({
+          error: "User not found",
+        });
+      }
+      // Make currently logged-in user's
+      // information (name, email, etc.)
+      // available on a new property on req named profile
+      req.profile = user;
+      next();
+    });
 };
 
 // Alternative custom middleware for finding a single
@@ -206,4 +213,44 @@ exports.userPhoto = (req, res, next) => {
     return res.send(req.profile.photo.data);
   }
   next();
+};
+
+// Controller for adding to one's following users
+exports.addFollowing = (req, res, next) => {
+  // req.body.userId ===> logged-in user's id
+  // req.body.followId ===> user that logged-in user follows
+  User.findByIdAndUpdate(
+    req.body.userId,
+    { $push: { following: req.body.followId } },
+    (err, result) => {
+      if (err) {
+        return res.status(400).json({
+          errorLerr,
+        });
+      }
+      next();
+    }
+  );
+};
+exports.addFollower = (req, res, next) => {
+  // req.body.userId ===> logged-in user's id
+  // req.body.followId ===> user that logged-in user follows
+  User.findByIdAndUpdate(
+    req.body.followId,
+    { $push: { followers: req.body.userId } },
+    {new:true}
+
+  )
+  .populate("following", "_id name")
+  .populate("followers", "_id name")
+  .exec((err, result) => {
+          if (err) {
+            return res.status(400).json({
+              errorLerr,
+            });
+          }
+          result._hashed_password = undefined;
+          result.salt = undefined;
+          res.json(result)
+  })
 };
