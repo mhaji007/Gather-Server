@@ -21,7 +21,8 @@ const {
   addFollowing,
   addFollower,
   removeFollowing,
-  removeFollower
+  removeFollower,
+  findPeople
 } = require("../controllers/user");
 
 
@@ -41,6 +42,10 @@ router.put(
 );
 
 router.get("/user/photo/:userId", userPhoto)
+
+// Follow suggestions
+router.get("/user/findpeople/:userId", requireSignin, findPeople)
+
 router.delete("/user/:userId", requireSignin, deleteUser);
 
 // Retrieves userId from url and

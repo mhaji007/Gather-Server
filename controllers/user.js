@@ -216,13 +216,13 @@ exports.userPhoto = (req, res, next) => {
 };
 
 // When following/unfollowing two arrays of
-// followings and followers must be handled
+// following and followers must be handled
 // simultaneously. Add to one party's (user who follows) following
 // translates to add to the other party's (user being followed) followers
 // Controller for adding to one's following users
 exports.addFollowing = (req, res, next) => {
-  // req.body.userId ===> logged-in user's id
-  // req.body.followId ===> user that logged-in user follows (from React client)
+  // req.body.userId ===> logged-in user's id (sent from React as userId)
+  // req.body.followId ===> user that logged-in user follows (sent from React as followId)
   User.findByIdAndUpdate(
     req.body.userId,
     { $push: { following: req.body.followId } },
@@ -298,3 +298,23 @@ exports.removeFollower = (req, res, next) => {
       res.json(result);
     });
 };
+
+// Controller for suggesting people to
+// follow to a given user on profile page
+// Excludes the user and people who user
+// is already following and suggests all the
+// remaining users
+
+exports.findPeople = (req, res) => {
+  let following = req.profile.push(req.profile._id)
+  // Find all users based on id
+  // that are not included in following
+  User.find({_id:{$nin:following}}, (err, users) => {
+    if(err) {
+      return res.status(400).json({
+        error:err
+      })
+    }
+    res.json(users)
+  }).select("name")
+}
