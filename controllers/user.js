@@ -207,7 +207,7 @@ exports.deleteUser = (req, res, next) => {
 exports.userPhoto = (req, res, next) => {
   // Check whether user has uploaded an image
   // res.set is a standard way of telling browser the type of content we are sending.
-  // it hangs if there is no return keyword or res.json is used.
+  // It hangs if there is no return keyword or res.json is used.
   if (req.profile.photo.data) {
     res.set(("Content-Type", req.profile.photo.contentType));
     return res.send(req.profile.photo.data);
@@ -306,15 +306,17 @@ exports.removeFollower = (req, res, next) => {
 // remaining users
 
 exports.findPeople = (req, res) => {
-  let following = req.profile.push(req.profile._id)
+  let following = req.profile.following;
+  following.push(req.profile._id);
   // Find all users based on id
   // that are not included in following
-  User.find({_id:{$nin:following}}, (err, users) => {
-    if(err) {
+  User.find({ _id: { $nin: following } }, (err, users) => {
+    console.log("users from findPeople ====>", users);
+    if (err) {
       return res.status(400).json({
-        error:err
-      })
+        error: err,
+      });
     }
-    res.json(users)
-  }).select("name")
-}
+    res.json(users);
+  }).select("name");
+};

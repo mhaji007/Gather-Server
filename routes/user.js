@@ -41,6 +41,7 @@ router.put(
   updateUser
 );
 
+// Retrieve photo after all content is loaded
 router.get("/user/photo/:userId", userPhoto)
 
 // Follow suggestions

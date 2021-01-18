@@ -18,6 +18,7 @@ const {
   updatePost,
   deletePost,
   postById,
+  postPhoto
 } = require("../controllers/post");
 const { userById } = require("../controllers/user");
 router.get("/posts", getPosts)
@@ -48,6 +49,9 @@ router.delete("/post/:postId", requireSignin, isPoster, deletePost);
 // finds user information based on the user id
 // and makes it available on req object
 router.param("userId", userById);
+
+// Retrieve photo after all content is loaded
+router.get("/post/photo/:postId", postPhoto)
 
 // Retrieves postId from url and
 // finds post information based on the post id

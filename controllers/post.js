@@ -16,7 +16,7 @@ exports.postById = (req, res, next, id) => {
     .exec((err, post) => {
       if (err || !post) {
         return res.status(400).json({
-          error:err,
+          error: err,
         });
       }
       // Make post
@@ -41,7 +41,6 @@ exports.postById = (req, res, next, id) => {
 // authorized to perform an action on the route this middleware
 // is applied to (e.g., they can delete the post).
 exports.isPoster = (req, res, next) => {
-
   // "==" is used here since req.post.postedBy._id is of type number and
   // req.auth._id is of type string
   let isPoster = req.post && req.auth && req.post.postedBy._id == req.auth._id;
@@ -64,9 +63,10 @@ exports.isPoster = (req, res, next) => {
 exports.getPosts = (req, res) => {
   const posts = Post.find()
     .populate("postedBy", "_id name")
-    .select(" _id title body")
+    .select(" _id title body created")
+    .sort({ created: -1 })
     .then((posts) => {
-      res.json({ posts });
+      res.json(posts);
     })
     .catch((err) => console.log(err));
 };
@@ -120,7 +120,7 @@ exports.createPost = (req, res) => {
     post.save((err, result) => {
       if (err) {
         return res.status(400).jsoon({
-          error: err,
+          error: "Could not create post",
         });
       }
       res.json(result);
@@ -182,16 +182,15 @@ exports.deletePost = (req, res) => {
   let post = req.post;
   post.remove((err, post) => {
     if (err) {
-      return res.status(400).json ({
-        error: "Could not delete the post"
-      })
+      return res.status(400).json({
+        error: "Could not delete the post",
+      });
     }
     res.json({
-      message: "Post was deleted susccessfully"
-    })
-  })
+      message: "Post was deleted susccessfully",
+    });
+  });
 };
-
 
 // Controller for updating a single post
 exports.updatePost = (req, res, next) => {
@@ -206,8 +205,15 @@ exports.updatePost = (req, res, next) => {
         error: err,
       });
     }
-    res.json({post})
+    res.json({ post });
   });
 };
 
-
+exports.postPhoto = (req, res, next) => {
+  // Check whether the post has an uploaded image
+  if (req.post.photo.data) {
+    res.set("Content-Type", req.post.photo.ContentType);
+    return res.send(req.post.photo.data);
+  }
+  next();
+};
