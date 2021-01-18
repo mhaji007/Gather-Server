@@ -120,7 +120,7 @@ exports.createPost = (req, res) => {
     post.save((err, result) => {
       if (err) {
         return res.status(400).jsoon({
-          error: "Could not create post",
+          error: err
         });
       }
       res.json(result);
@@ -216,4 +216,8 @@ exports.postPhoto = (req, res, next) => {
     return res.send(req.post.photo.data);
   }
   next();
+};
+
+exports.singlePost = (req, res, next) => {
+  return res.json(req.post);
 };

@@ -18,7 +18,8 @@ const {
   updatePost,
   deletePost,
   postById,
-  postPhoto
+  postPhoto,
+  singlePost
 } = require("../controllers/post");
 const { userById } = require("../controllers/user");
 router.get("/posts", getPosts)
@@ -37,6 +38,8 @@ router.post("/post/new/:userId", requireSignin, createPost);
 
 
 router.get("/posts/by/:userId", requireSignin, postsByUser);
+
+router.get("/post/:postId", singlePost);
 
 router.put("/post/:postId", requireSignin, isPoster, updatePost);
 
