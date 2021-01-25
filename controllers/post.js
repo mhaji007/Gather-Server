@@ -192,22 +192,64 @@ exports.deletePost = (req, res) => {
   });
 };
 
-// Controller for updating a single post
+// Controller for updating a single post (prior to handling
+// post photo - formData
+//)
+
+// exports.updatePost = (req, res, next) => {
+//   let post = req.post;
+//   // Extend- mutate first object (post)
+//   // with data in req.body (fields to be updated)
+//   post = _.extend(post, req.body);
+//   post.updated = Date.now();
+//   post.save((err) => {
+//     if (err) {
+//       return res.status(400).json({
+//         error: err,
+//       });
+//     }
+//     res.json({ post });
+//   });
+// };
+
+// Controller for updating a single post with photo
 exports.updatePost = (req, res, next) => {
-  let post = req.post;
-  // Extend- mutate first object (post)
-  // with data in req.body (fields to be updated)
-  post = _.extend(post, req.body);
-  post.updated = Date.now();
-  post.save((err) => {
+  let form = new formidable.IncomingForm();
+  form.keepExtensions = true;
+  // req is where the form data is coming from
+  // the callback is how we handle the data
+  form.parse(req, (err, fields, files) => {
+    console.log("UPDATE USER FORM DATA ", fields, files);
     if (err) {
+      console.log("UPDATE USER ERR =====> ", err);
       return res.status(400).json({
-        error: err,
+        error: "Photo could not be uploaded",
       });
     }
-    res.json({ post });
+    console.table({ err, fields, files });
+
+    let post = req.post;
+    post = _.extend(post, fields);
+    post.updated = Date.now();
+
+    if (files.photo) {
+      post.photo.data = fs.readFileSync(files.photo.path);
+      post.photo.contentType = files.photo.type;
+    }
+    post.save((err, result) => {
+      if (err) {
+        return res.status(400).json({
+          error: err,
+        });
+      }
+      post.hashed_password = undefined;
+      post.salt = undefined;
+      res.json(post);
+    });
   });
 };
+
+
 
 exports.postPhoto = (req, res, next) => {
   // Check whether the post has an uploaded image
