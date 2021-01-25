@@ -19,10 +19,16 @@ const {
   deletePost,
   postById,
   postPhoto,
-  singlePost
+  singlePost,
+  like,
+  unLike
 } = require("../controllers/post");
 const { userById } = require("../controllers/user");
 router.get("/posts", getPosts)
+
+router.put('/post/like', requireSignin, like)
+router.put('/post/unlike', requireSignin, unLike)
+
 // Post route prior sending form data (using formidable)
 
 // router.post("/post", requireSignin, createPostValidator, runValidation, createPost);
@@ -61,8 +67,5 @@ router.get("/post/photo/:postId", postPhoto)
 // and makes it available on req object
 router.param("postId", postById);
 
-// module.exports = {
-//   getPosts
-// }
 
 module.exports = router;

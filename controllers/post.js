@@ -63,7 +63,7 @@ exports.isPoster = (req, res, next) => {
 exports.getPosts = (req, res) => {
   const posts = Post.find()
     .populate("postedBy", "_id name")
-    .select(" _id title body created")
+    .select(" _id title body created likes")
     .sort({ created: -1 })
     .then((posts) => {
       res.json(posts);
@@ -120,7 +120,7 @@ exports.createPost = (req, res) => {
     post.save((err, result) => {
       if (err) {
         return res.status(400).jsoon({
-          error: err
+          error: err,
         });
       }
       res.json(result);
@@ -249,8 +249,6 @@ exports.updatePost = (req, res, next) => {
   });
 };
 
-
-
 exports.postPhoto = (req, res, next) => {
   // Check whether the post has an uploaded image
   if (req.post.photo.data) {
@@ -262,4 +260,37 @@ exports.postPhoto = (req, res, next) => {
 
 exports.singlePost = (req, res, next) => {
   return res.json(req.post);
+};
+
+// postId and userId is sent from
+// client in body
+exports.like = (req, res) => {
+  Post.findByIdAndUpdate(
+    req.body.postId,
+    { $push: { likes: req.body.userId } },
+    { new: true }
+  ).exec((err, result) => {
+    if(err) {
+      return res.status(400).json({
+        error:err
+      })
+    } else {
+      res.json(result)
+    }
+  })
+};
+exports.unLike = (req, res) => {
+  Post.findByIdAndUpdate(
+    req.body.postId,
+    { $pull: { likes: req.body.userId } },
+    { new: true }
+  ).exec((err, result) => {
+    if (err) {
+      return res.status(400).json({
+        error: err,
+      });
+    } else {
+      res.json(result);
+    }
+  });
 };
