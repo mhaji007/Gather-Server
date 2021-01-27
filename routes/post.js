@@ -21,13 +21,21 @@ const {
   postPhoto,
   singlePost,
   like,
-  unLike
+  unLike,
+  comment,
+  uncomment,
 } = require("../controllers/post");
 const { userById } = require("../controllers/user");
 router.get("/posts", getPosts)
 
+// Like/unlike
 router.put('/post/like', requireSignin, like)
 router.put('/post/unlike', requireSignin, unLike)
+
+// Comments
+router.post('/post/comment', requireSignin, comment)
+router.post('/post/uncomment', requireSignin, uncomment)
+
 
 // Post route prior sending form data (using formidable)
 

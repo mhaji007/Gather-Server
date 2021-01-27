@@ -13,6 +13,10 @@ const _ = require("lodash");
 exports.postById = (req, res, next, id) => {
   Post.findById(id)
     .populate("postedBy", "_id name")
+    // Comment content and creation date of the post
+    .populate("comments", "text created")
+    // Poster of comment
+    .populate("comments.postedBy", "_id name")
     .exec((err, post) => {
       if (err || !post) {
         return res.status(400).json({
@@ -62,14 +66,19 @@ exports.isPoster = (req, res, next) => {
 
 exports.getPosts = (req, res) => {
   const posts = Post.find()
+    // Poster of the post
     .populate("postedBy", "_id name")
+    // Comment content and creation date of the post
+    .populate("comments", "text created")
+    // Poster of comment
+    .populate("comments.postedBy", "_id name")
     .select(" _id title body created likes")
     .sort({ created: -1 })
     .then((posts) => {
       res.json(posts);
     })
     .catch((err) => console.log(err));
-};
+}
 
 // Query building via exec
 
@@ -161,6 +170,8 @@ exports.postsByUser = (req, res) => {
     // and retrieve id and name of that user
     // for those posts
     .populate("postedBy", "_id name")
+
+    .select(" _id title body created likes")
     // sort the posts based on created field
     .sort("-created")
     .exec((err, posts) => {
@@ -294,3 +305,53 @@ exports.unLike = (req, res) => {
     }
   });
 };
+
+exports.comment = (req, res) => {
+  let comment = req.body.comment
+  comment.postedBy = req.body.userId
+  Post.findByIdAndUpdate(
+    req.body.postId,
+    { $push: { comments: comment } },
+    { new: true }
+  )
+  // Poster of the comment on the postcd
+  .populate("comments.postedBy", "_id name")
+  // Poster of the post
+  .populate("postedBy", "_id name")
+  .exec((err, result) => {
+    if (err) {
+      return res.status(400).json({
+        error: err,
+      });
+    } else {
+      res.json(result);
+    }
+  });
+
+}
+
+
+exports.uncomment = (req, res) => {
+  let comment = req.body.comment
+  comment.postedBy = req.body.userId
+  Post.findByIdAndUpdate(
+    req.body.postId,
+    // {_id: comment._id} tells which comment to pull
+    { $pull: { comments: {_id: comment._id} } },
+    { new: true }
+  )
+  .populate("comments.postedBy", "_id name")
+  .populate("postedBy", "_id name")
+  .exec((err, result) => {
+    if (err) {
+      return res.status(400).json({
+        error: err,
+      });
+    } else {
+      res.json(result);
+    }
+  });
+
+}
+
+
