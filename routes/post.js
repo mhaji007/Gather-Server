@@ -33,8 +33,8 @@ router.put('/post/like', requireSignin, like)
 router.put('/post/unlike', requireSignin, unLike)
 
 // Comments
-router.post('/post/comment', requireSignin, comment)
-router.post('/post/uncomment', requireSignin, uncomment)
+router.put('/post/comment', requireSignin, comment)
+router.put('/post/uncomment', requireSignin, uncomment)
 
 
 // Post route prior sending form data (using formidable)

@@ -55,3 +55,20 @@ exports.userUpdateValidator = [
   //   .matches(/\d/)
   //   .withMessage("Password must contain at least one number"),
 ];
+
+
+
+
+
+exports.passwordResetValidator = [
+  check("newPassword")
+    // Make sure it is not empty
+    .not()
+    .isEmpty()
+    .withMessage("Password is required"),
+  check("newPassword")
+    .isLength({ min: 3 })
+    .withMessage("Name of minimum 3 characters is required")
+    .matches(/\d/)
+    .withMessage("Password must contain at least one number"),
+];

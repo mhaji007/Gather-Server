@@ -17,6 +17,7 @@ exports.postById = (req, res, next, id) => {
     .populate("comments", "text created")
     // Poster of comment
     .populate("comments.postedBy", "_id name")
+    .select("_id title body created likes comments photo")
     .exec((err, post) => {
       if (err || !post) {
         return res.status(400).json({
@@ -309,6 +310,9 @@ exports.unLike = (req, res) => {
 exports.comment = (req, res) => {
   let comment = req.body.comment
   comment.postedBy = req.body.userId
+  console.log("comments.postedBy ===>", req.body.userId)
+  console.log("comment ===>", req.body.comment)
+  console.log("postId ===>", req.body.postId)
   Post.findByIdAndUpdate(
     req.body.postId,
     { $push: { comments: comment } },
@@ -320,11 +324,13 @@ exports.comment = (req, res) => {
   .populate("postedBy", "_id name")
   .exec((err, result) => {
     if (err) {
+      console.log(err)
       return res.status(400).json({
         error: err,
       });
     } else {
       res.json(result);
+      console.log("result ==>", result)
     }
   });
 

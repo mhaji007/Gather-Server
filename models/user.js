@@ -37,13 +37,14 @@ const userSchema = new mongoose.Schema({
     trim: true,
   },
   // List of users one is following
-  following: [
-    {type:ObjectId, ref:"User"}
-  ],
+  following: [{ type: ObjectId, ref: "User" }],
   // List of people that follow one
-  followers: [
-    {type:ObjectId, ref:"User"}
-  ]
+  followers: [{ type: ObjectId, ref: "User" }],
+  
+  resetPasswordLink: {
+    data: String,
+    default: "",
+  },
 });
 
 // Virtual fields ==> "password", used to get the plain password
