@@ -16,7 +16,8 @@ const {
   signin,
   signout,
   resetPassword,
-  forgotPassword
+  forgotPassword,
+  socialLogin
 } = require("../controllers/auth");
 const { userById } = require("../controllers/user");
 
@@ -28,6 +29,8 @@ router.get("/signout", signout);
 // password forgot and reset routes
 router.put("/forgot-password", forgotPassword);
 router.put("/reset-password", passwordResetValidator, runValidation, resetPassword);
+
+router.post("/social-login", socialLogin);
 
 // Look for the paramater in the incoming
 // request of the url
